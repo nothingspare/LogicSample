@@ -1,0 +1,1127 @@
+[
+  {
+    "name": "Espresso Logic Sample",
+    "url_name": "sample",
+    "Users": [
+      {
+        "name": "A. Lincoln",
+        "fullname": "Test user Alpha",
+        "email": "alpha@test.com",
+        "status": "A",
+        "roles": "Normal user",
+        "data": "deptNo=US Sales,email=alpha@test.com",
+        "password_hash": "Password1"
+      },
+      {
+        "name": "demo",
+        "fullname": "demo",
+        "email": "new@user.com",
+        "status": "A",
+        "roles": "System administrator,",
+        "password_hash": "Password1"
+      }
+    ],
+    "DbaseSchemas": [
+      {
+        "name": "Espresso Logic Sample",
+        "comments": "Starts phpMyAdmin.  Brave souls might place the pwd here.",
+        "url": "@@sampleDatabaseUrl@@",
+        "catalog_name": "@@sampleDatabaseSchema@@",
+        "user_name": "@@sampleDatabaseUser@@",
+        "password": "@@sampleDatabasePassword@@",
+        "read_only": false,
+        "schema_editable": false,
+        "active": true,
+        "status": "I",
+        "dbasetype_ident": 1
+      }
+    ],
+    "ApiVersions": [
+      {
+        "name": "v1",
+        "comments": "",
+        "Resources": [
+          {
+            "ident": 1,
+            "resource_type_ident": 1,
+            "table_name": "customers",
+            "name": "cust",
+            "description": "Small resource for test",
+            "is_collection": "Y",
+            "sorting": "name asc",
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "Name",
+                "description": "",
+                "column_name": "name",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "Balance",
+                "description": "",
+                "column_name": "balance",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "CreditLimit",
+                "description": "",
+                "column_name": "credit_limit",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 2,
+            "resource_type_ident": 1,
+            "table_name": "customers",
+            "name": "CustOrdersSvc",
+            "description": "API Mashup - local Customer, remote RESTful orders\n -- click the Sub Resource",
+            "is_collection": "Y",
+            "sorting": "name asc",
+            "root_ident": 2
+          },
+          {
+            "ident": 3,
+            "resource_type_ident": 3,
+            "table_name": "customers",
+            "name": "MongoAudit",
+            "description": "This shows how to add JavaScript to call an external system to insert changes into Mongo using a custom Library",
+            "is_collection": "Y",
+            "code_text": "log.debug(\"audit begin\");\nvar mongoClient = MongoUtilityCreate();\nvar configSetup = {\n   serverName  : '23.100.38.40',\n   serverPort  : '27017' ,\n   databaseName: 'Audit'\n}\nmongoClient.configure(configSetup);\n//opitional\nvar payload = {\n    username: \"\",\n    password: \"\"\n};\nmongoClient.createClientConnection(payload);\nvar details = {\n    filter: \"name like 'Alpha and Sons'\",\n    order: \"name asc\",\n    pagesize: 1,\n    offset: 0,\n    chunksize: 10\n};\nvar json = SysUtility.getResource(\"cust\", details);\n\nlog.debug('start audit to mongo '+JSON.stringify(json,null,2));\nvar resp = mongoClient.mongoInsert(\"audit\",\"EspressoAudit\", json);\nlog.debug(JSON.stringify(resp,null,2));\nmongoClient.close();\nreturn {return: 'Audit Completed'};",
+            "filter_code": "",
+            "root_ident": 3,
+            "ResourceAttributes": [
+              {
+                "name": "name",
+                "column_name": "name",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "notes",
+                "column_name": "notes",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "customer_level",
+                "column_name": "customer_level",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "is_credit_pre_approved",
+                "column_name": "is_credit_pre_approved",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 4,
+            "resource_type_ident": 1,
+            "table_name": "departments",
+            "name": "dept_e_o",
+            "description": "",
+            "is_collection": "N",
+            "join_condition": "name = [department_name]",
+            "container_ident": 5,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "Budget",
+                "description": "",
+                "column_name": "budget",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "Notes",
+                "description": "",
+                "column_name": "notes",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 5,
+            "resource_type_ident": 1,
+            "table_name": "employees",
+            "name": "emp",
+            "description": "",
+            "is_collection": "N",
+            "join_condition": "name = [salesrep_name]",
+            "container_ident": 10,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "Salary",
+                "description": "",
+                "column_name": "base_salary",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 6,
+            "resource_type_ident": 1,
+            "table_name": "employees",
+            "name": "emp",
+            "description": "Example of adding an attribute into a row.",
+            "is_collection": "Y",
+            "filter_code": "// we can inject new attributes into the row...\n\nvar isApresident = false;\nif (row.Name == \"A. Lincoln\") {\n    isApresident = true;\n    // also typical: row.full_name = row.first_name + ' ' + row.last_name;\n}\nrow.isPresidentByRowEvent = isApresident;  // creates attr",
+            "root_ident": 6,
+            "ResourceAttributes": [
+              {
+                "name": "Name",
+                "description": "",
+                "column_name": "name",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "Salary",
+                "description": "",
+                "column_name": "base_salary",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 7,
+            "resource_type_ident": 1,
+            "table_name": "lineitems",
+            "name": "items_o",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "order_ident = [ident]",
+            "sorting": "product_name asc",
+            "container_ident": 10,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "ProductName",
+                "description": "",
+                "column_name": "product_name",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "QuantityOrdered",
+                "description": "",
+                "column_name": "quantity_ordered",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "PartPrice",
+                "description": "",
+                "column_name": "part_price",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "Amount",
+                "description": "",
+                "column_name": "amount",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 8,
+            "resource_type_ident": 1,
+            "table_name": "lineitems",
+            "name": "product_item",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "product_name = [name]",
+            "container_ident": 15,
+            "root_ident": 15,
+            "ResourceAttributes": [
+              {
+                "name": "QuantityOrdered",
+                "description": "",
+                "column_name": "quantity_ordered",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "PartPrice",
+                "description": "",
+                "column_name": "part_price",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "FromOrder",
+                "description": "",
+                "column_name": "order_ident",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "Amount",
+                "description": "",
+                "column_name": "amount",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 9,
+            "resource_type_ident": 1,
+            "table_name": "orders",
+            "name": "empOrders",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "salesrep_name = [name]",
+            "container_ident": 6,
+            "root_ident": 6,
+            "ResourceAttributes": [
+              {
+                "name": "OrderID",
+                "description": "",
+                "column_name": "ident",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountTotal",
+                "description": "",
+                "column_name": "amount_total",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountDiscounted",
+                "description": "",
+                "column_name": "amount_discounted",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountPaid",
+                "description": "",
+                "column_name": "amount_paid",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountUnPaid",
+                "description": "",
+                "column_name": "amount_un_paid",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "IsReady",
+                "description": "",
+                "column_name": "is_ready",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 10,
+            "resource_type_ident": 1,
+            "table_name": "orders",
+            "name": "orders_c",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "customer_name = [name]",
+            "filter": "approving_officer <> 'G PO.4'",
+            "sorting": "placed_date asc",
+            "container_ident": 1,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "OrderID",
+                "description": "",
+                "column_name": "ident",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountTotal",
+                "description": "",
+                "column_name": "amount_total",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountDiscounted",
+                "description": "",
+                "column_name": "amount_discounted",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountPaid",
+                "description": "",
+                "column_name": "amount_paid",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmountUnPaid",
+                "description": "",
+                "column_name": "amount_un_paid",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "IsReady",
+                "description": "",
+                "column_name": "is_ready",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "placed_date",
+                "description": "",
+                "column_name": "placed_date",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "customer",
+                "description": "",
+                "column_name": "customer_name",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "approvingOfficer",
+                "description": "",
+                "column_name": "approving_officer",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 11,
+            "resource_type_ident": 2,
+            "table_name": "orders",
+            "name": "OrdersFreeSql",
+            "description": "Illustrates Free SQL",
+            "is_collection": "Y",
+            "code_text": "select * from orders where ident not in\n (select _o.ident from orders _o\n join lineitems _l on _l.order_ident = _o.ident\n left join products _p on _p.name = _l.product_name\n where _p.is_secret = true)",
+            "root_ident": 11
+          },
+          {
+            "ident": 12,
+            "resource_type_ident": 3,
+            "table_name": "orders",
+            "name": "OrdersSvc",
+            "description": "RESTful Orders from Espresso (project Logic Demo)\n -- click Detail tab",
+            "is_collection": "Y",
+            "code_text": "var url = req.baseUrl;                      // e.g. http://houston.d.espressologic.com/rest/abl/sample/\nurl = url.replace(\"sample\",\"demo\");    // compute baseURL of target system\nurl = url + \"v1/PurchaseOrders\";       // add version/endPoint\nvar key = containingRow.name;       // containingRow is system supplied\nlog.debug(\"..using key: \" + key + \", and url: \" + url);\nurl = url + \"?filter=customer_name=%22\" + key + \"%22\";\nurl = url.replace(/ /g, \"%20\");\nvar params= {\n   filter: \"customer_name=%22\" + key + \"%22\"\n};\nvar settings = {\n   headers: {\n      Authorization: \"Espresso demo_full:123\"\n   }\n}\nvar response =  SysUtility.restGet(url, params, settings);\nreturn JSON.parse(response);",
+            "container_ident": 2,
+            "root_ident": 2
+          },
+          {
+            "ident": 13,
+            "resource_type_ident": 1,
+            "table_name": "payment_order_allocations",
+            "name": "payments_o",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "order_ident = [ident]",
+            "container_ident": 10,
+            "root_ident": 1
+          },
+          {
+            "ident": 14,
+            "resource_type_ident": 1,
+            "table_name": "payments",
+            "name": "payments_c",
+            "description": "",
+            "is_collection": "Y",
+            "join_condition": "customer_name = [name]",
+            "sorting": "placed_date asc",
+            "container_ident": 1,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "Amount",
+                "description": "",
+                "column_name": "amount",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "AmtUnDisbursed",
+                "description": "",
+                "column_name": "amount_un_disbursed",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "PaymentId",
+                "description": "",
+                "column_name": "ident",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 15,
+            "resource_type_ident": 1,
+            "table_name": "products",
+            "name": "product_detail",
+            "description": "",
+            "is_collection": "Y",
+            "root_ident": 15,
+            "ResourceAttributes": [
+              {
+                "name": "ProductName",
+                "description": "",
+                "column_name": "name",
+                "is_defined_key_part": false
+              }
+            ]
+          },
+          {
+            "ident": 16,
+            "resource_type_ident": 1,
+            "table_name": "products",
+            "name": "product_detail_link",
+            "description": "drill down",
+            "is_collection": "N",
+            "join_condition": "name = [name]",
+            "container_ident": 17,
+            "root_ident": 1,
+            "linked_ident": 15
+          },
+          {
+            "ident": 17,
+            "resource_type_ident": 1,
+            "table_name": "products",
+            "name": "product_item",
+            "description": "",
+            "is_collection": "N",
+            "join_condition": "name = [product_name]",
+            "container_ident": 7,
+            "root_ident": 1,
+            "ResourceAttributes": [
+              {
+                "name": "ProductNotes",
+                "description": "",
+                "column_name": "notes",
+                "is_defined_key_part": false
+              },
+              {
+                "name": "CurrentPrice",
+                "description": "",
+                "column_name": "price",
+                "is_defined_key_part": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "ProjectOptions": [
+      {
+        "option_value": "false",
+        "projectoptiontype_ident": 1
+      },
+      {
+        "option_value": "http://www.espressologic.com/rest/",
+        "projectoptiontype_ident": 2
+      },
+      {
+        "option_value": "false",
+        "projectoptiontype_ident": 3
+      },
+      {
+        "option_value": "@metadata",
+        "projectoptiontype_ident": 4
+      },
+      {
+        "option_value": "2000",
+        "projectoptiontype_ident": 5
+      },
+      {
+        "option_value": "2000",
+        "projectoptiontype_ident": 6
+      },
+      {
+        "option_value": "20",
+        "projectoptiontype_ident": 7
+      },
+      {
+        "option_value": "5000",
+        "projectoptiontype_ident": 8
+      },
+      {
+        "option_value": "20",
+        "projectoptiontype_ident": 9
+      },
+      {
+        "option_value": "100",
+        "projectoptiontype_ident": 10
+      },
+      {
+        "option_value": "2000",
+        "projectoptiontype_ident": 11
+      },
+      {
+        "option_value": "false",
+        "projectoptiontype_ident": 12
+      }
+    ],
+    "ProjectLibraries": [
+      {
+        "Library": {
+          "name": "Moment.js (with Langs)",
+          "@metadata": {
+            "action": "LOOKUP",
+            "key": "name"
+          }
+        }
+      },
+      {
+     
+        "Library": {
+          "name": "MongoUtility.js",
+          "@metadata": {
+            "action": "LOOKUP",
+            "key": "name"
+          }
+        }
+      }
+    ],
+    "Applications": [
+      {
+        "name": "Default app",
+        "default_language": "eng",
+        "ApplicationTableSettings": [
+          {
+            "table_name": "customers",
+            "json": "{\"name\":\"customers\",\"alias\":\"customers\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":238.39999999999998,\"$$hashKey\":\"02X\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"balance\",\"width\":59.599999999999994,\"$$hashKey\":\"02Y\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"credit_limit\",\"width\":79.5,\"$$hashKey\":\"02Z\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\",\"$$hashKey\":\"030\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_level\",\"$$hashKey\":\"031\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_credit_pre_approved\",\"$$hashKey\":\"032\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"big_order_count\",\"$$hashKey\":\"033\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"max_unpaid_order\",\"$$hashKey\":\"034\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"035\"}},\"gridColumns\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":238.39999999999998,\"$$hashKey\":\"02X\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"balance\",\"width\":59.599999999999994,\"$$hashKey\":\"02Y\"}},\"scalarColumns\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":238.39999999999998,\"$$hashKey\":\"02X\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"balance\",\"width\":59.599999999999994,\"$$hashKey\":\"02Y\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"credit_limit\",\"width\":79.5,\"$$hashKey\":\"02Z\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\",\"$$hashKey\":\"030\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_level\",\"$$hashKey\":\"031\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_credit_pre_approved\",\"$$hashKey\":\"032\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"big_order_count\",\"$$hashKey\":\"033\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"max_unpaid_order\",\"$$hashKey\":\"034\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"035\"}},\"parentSettings\":{},\"childrenSettings\":{\"paymentsList\":{\"name\":\"paymentsList\",\"tableName\":\"payments\",\"alias\":\"Payments\",\"displayed\":true,\"selected\":true,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":159},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":318},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount\",\"width\":390.44015444015446},\"amount_un_disbursed\":{\"name\":\"amount_un_disbursed\",\"alias\":\"Amount Un Disbursed\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_disbursed\",\"width\":245.55984555984557},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_name\"}},\"gridColumns\":{\"amount_un_disbursed\":{\"name\":\"amount_un_disbursed\",\"alias\":\"Amount Un Disbursed\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_disbursed\",\"width\":245.55984555984557},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount\",\"width\":390.44015444015446}},\"parentSettings\":{\"paymentCustomer\":{\"alias\":\"customers\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.name\",\"parentRole\":\"paymentCustomer\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.balance\",\"parentRole\":\"paymentCustomer\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.credit_limit\",\"parentRole\":\"paymentCustomer\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.notes\",\"parentRole\":\"paymentCustomer\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.customer_level\",\"parentRole\":\"paymentCustomer\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.is_credit_pre_approved\",\"parentRole\":\"paymentCustomer\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.big_order_count\",\"parentRole\":\"paymentCustomer\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.max_unpaid_order\",\"parentRole\":\"paymentCustomer\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.paymentCustomer.ts\",\"parentRole\":\"paymentCustomer\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"ordersList\":{\"name\":\"ordersList\",\"tableName\":\"orders\",\"alias\":\"Orders\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":130.14671814671811},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":318},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"width\":198.02227928543715},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_discounted\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_paid\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_paid\",\"width\":62.271157007999115},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_ready\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"approving_officer\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"officer_item_usage_approval\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"unresolved_usage_count\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\",\"width\":122.77992277992279},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"due_date\",\"width\":122.77992277992279},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"salesrep_name\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_name\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"cloned_from_order_ident\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"item_count\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"empsales_ident\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":130.14671814671811},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"width\":198.02227928543715},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_paid\",\"width\":62.271157007999115},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\",\"width\":122.77992277992279},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"due_date\",\"width\":122.77992277992279}},\"parentSettings\":{\"empSales\":{\"alias\":\"empsales\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ident\",\"parentRole\":\"empSales\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ts\",\"parentRole\":\"empSales\"},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.employee_name\",\"parentRole\":\"empSales\"},\"year\":{\"name\":\"year\",\"alias\":\"Year\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.year\",\"parentRole\":\"empSales\"},\"month\":{\"name\":\"month\",\"alias\":\"Month\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.month\",\"parentRole\":\"empSales\"},\"total_sales\":{\"name\":\"total_sales\",\"alias\":\"Total Sales\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.total_sales\",\"parentRole\":\"empSales\"}}},\"salesRep\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.name\",\"parentRole\":\"salesRep\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.base_salary\",\"parentRole\":\"salesRep\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.employee_type\",\"parentRole\":\"salesRep\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.ts\",\"parentRole\":\"salesRep\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.visible_to\",\"parentRole\":\"salesRep\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.department_name\",\"parentRole\":\"salesRep\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.on_loan_department_name\",\"parentRole\":\"salesRep\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.notes\",\"parentRole\":\"salesRep\"}}},\"customer\":{\"alias\":\"customers\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.name\",\"parentRole\":\"customer\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.balance\",\"parentRole\":\"customer\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.credit_limit\",\"parentRole\":\"customer\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.notes\",\"parentRole\":\"customer\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.customer_level\",\"parentRole\":\"customer\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.is_credit_pre_approved\",\"parentRole\":\"customer\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.big_order_count\",\"parentRole\":\"customer\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.max_unpaid_order\",\"parentRole\":\"customer\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.ts\",\"parentRole\":\"customer\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[],\"labelPlacement\":\"Left\"}"
+          },
+          {
+            "table_name": "orders",
+            "json": "{\"name\":\"orders\",\"alias\":\"orders\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"$$hashKey\":\"3CT\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"3CU\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"$$hashKey\":\"3CV\"},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_discounted\",\"$$hashKey\":\"3CW\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_paid\",\"$$hashKey\":\"3CX\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_paid\",\"$$hashKey\":\"3CY\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_ready\",\"$$hashKey\":\"3CZ\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"approving_officer\",\"$$hashKey\":\"3D0\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"officer_item_usage_approval\",\"$$hashKey\":\"3D1\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"unresolved_usage_count\",\"$$hashKey\":\"3D2\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\",\"$$hashKey\":\"3D3\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"due_date\",\"$$hashKey\":\"3D4\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"salesrep_name\",\"$$hashKey\":\"3D5\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_name\",\"$$hashKey\":\"3D6\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"cloned_from_order_ident\",\"$$hashKey\":\"3D7\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"item_count\",\"$$hashKey\":\"3D8\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"empsales_ident\",\"$$hashKey\":\"3D9\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"$$hashKey\":\"3CT\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"3CU\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"$$hashKey\":\"3CV\"}},\"scalarColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"$$hashKey\":\"3CT\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_ready\",\"$$hashKey\":\"3CZ\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"officer_item_usage_approval\",\"$$hashKey\":\"3D1\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_paid\",\"$$hashKey\":\"3CY\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_paid\",\"$$hashKey\":\"3CX\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"$$hashKey\":\"3CV\"},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_discounted\",\"$$hashKey\":\"3CW\"},\"salesRep/name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.name\",\"parentRole\":\"salesRep\",\"$$hashKey\":\"411\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\",\"$$hashKey\":\"3D3\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"due_date\",\"$$hashKey\":\"3D4\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_name\",\"$$hashKey\":\"3D6\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"approving_officer\",\"$$hashKey\":\"3D0\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"salesrep_name\",\"$$hashKey\":\"3D5\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"cloned_from_order_ident\",\"$$hashKey\":\"3D7\"}},\"parentSettings\":{\"empSales\":{\"name\":\"empSales\",\"alias\":\"empSales\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ident\",\"parentRole\":\"empSales\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ts\",\"parentRole\":\"empSales\"},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.employee_name\",\"parentRole\":\"empSales\",\"$$hashKey\":\"410\"},\"year\":{\"name\":\"year\",\"alias\":\"Year\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.year\",\"parentRole\":\"empSales\"},\"month\":{\"name\":\"month\",\"alias\":\"Month\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.month\",\"parentRole\":\"empSales\"},\"total_sales\":{\"name\":\"total_sales\",\"alias\":\"Total Sales\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.total_sales\",\"parentRole\":\"empSales\"}}},\"salesRep\":{\"name\":\"salesRep\",\"alias\":\"salesRep\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.name\",\"parentRole\":\"salesRep\",\"$$hashKey\":\"411\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.base_salary\",\"parentRole\":\"salesRep\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.employee_type\",\"parentRole\":\"salesRep\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.ts\",\"parentRole\":\"salesRep\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.visible_to\",\"parentRole\":\"salesRep\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.department_name\",\"parentRole\":\"salesRep\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.on_loan_department_name\",\"parentRole\":\"salesRep\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.notes\",\"parentRole\":\"salesRep\"}}},\"customer\":{\"name\":\"customer\",\"alias\":\"customer\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.name\",\"parentRole\":\"customer\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.balance\",\"parentRole\":\"customer\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.credit_limit\",\"parentRole\":\"customer\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.notes\",\"parentRole\":\"customer\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.customer_level\",\"parentRole\":\"customer\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.is_credit_pre_approved\",\"parentRole\":\"customer\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.big_order_count\",\"parentRole\":\"customer\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.max_unpaid_order\",\"parentRole\":\"customer\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.ts\",\"parentRole\":\"customer\"}}}},\"childrenSettings\":{\"lineitem_usagesList\":{\"name\":\"lineitem_usagesList\",\"tableName\":\"lineitem_usages\",\"alias\":\"Lineitem Usages\",\"displayed\":true,\"selected\":true,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":90.85714285714286},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":181.71428571428572},\"explanation\":{\"name\":\"explanation\",\"alias\":\"Explanation\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"explanation\",\"width\":363.42857142857144},\"order_ident\":{\"name\":\"order_ident\",\"alias\":\"Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"order_ident\"},\"item_ident\":{\"name\":\"item_ident\",\"alias\":\"Item Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"item_ident\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":90.85714285714286},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":181.71428571428572},\"explanation\":{\"name\":\"explanation\",\"alias\":\"Explanation\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"explanation\",\"width\":363.42857142857144}},\"parentSettings\":{\"itemForUsage\":{\"alias\":\"lineitems\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.ident\",\"parentRole\":\"itemForUsage\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.ts\",\"parentRole\":\"itemForUsage\"},\"product_name\":{\"name\":\"product_name\",\"alias\":\"Product Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.product_name\",\"parentRole\":\"itemForUsage\"},\"quantity_ordered\":{\"name\":\"quantity_ordered\",\"alias\":\"Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.quantity_ordered\",\"parentRole\":\"itemForUsage\"},\"part_price\":{\"name\":\"part_price\",\"alias\":\"Part Price\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.part_price\",\"parentRole\":\"itemForUsage\"},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.amount\",\"parentRole\":\"itemForUsage\"},\"kit_quantity_ordered\":{\"name\":\"kit_quantity_ordered\",\"alias\":\"Kit Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.kit_quantity_ordered\",\"parentRole\":\"itemForUsage\"},\"kit_number_required\":{\"name\":\"kit_number_required\",\"alias\":\"Kit Number Required\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.kit_number_required\",\"parentRole\":\"itemForUsage\"},\"kit_component_count\":{\"name\":\"kit_component_count\",\"alias\":\"Kit Component Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.kit_component_count\",\"parentRole\":\"itemForUsage\"},\"kit_item_ident\":{\"name\":\"kit_item_ident\",\"alias\":\"Kit Item Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.kit_item_ident\",\"parentRole\":\"itemForUsage\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.notes\",\"parentRole\":\"itemForUsage\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BOOLEAN\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.is_ready\",\"parentRole\":\"itemForUsage\"},\"order_ident\":{\"name\":\"order_ident\",\"alias\":\"Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemForUsage.order_ident\",\"parentRole\":\"itemForUsage\"}}},\"orderForUsage\":{\"alias\":\"orders\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.ident\",\"parentRole\":\"orderForUsage\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.ts\",\"parentRole\":\"orderForUsage\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.amount_total\",\"parentRole\":\"orderForUsage\"},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.amount_discounted\",\"parentRole\":\"orderForUsage\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.amount_paid\",\"parentRole\":\"orderForUsage\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.amount_un_paid\",\"parentRole\":\"orderForUsage\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.is_ready\",\"parentRole\":\"orderForUsage\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.approving_officer\",\"parentRole\":\"orderForUsage\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.officer_item_usage_approval\",\"parentRole\":\"orderForUsage\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.unresolved_usage_count\",\"parentRole\":\"orderForUsage\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.placed_date\",\"parentRole\":\"orderForUsage\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.due_date\",\"parentRole\":\"orderForUsage\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.salesrep_name\",\"parentRole\":\"orderForUsage\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.customer_name\",\"parentRole\":\"orderForUsage\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.cloned_from_order_ident\",\"parentRole\":\"orderForUsage\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.item_count\",\"parentRole\":\"orderForUsage\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.orderForUsage.empsales_ident\",\"parentRole\":\"orderForUsage\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"payment_order_allocationsList\":{\"name\":\"payment_order_allocationsList\",\"tableName\":\"payment_order_allocations\",\"alias\":\"Payment Order Allocations\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\"},\"order_ident\":{\"name\":\"order_ident\",\"alias\":\"Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"order_ident\"},\"payment_ident\":{\"name\":\"payment_ident\",\"alias\":\"Payment Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"payment_ident\"},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\"},\"payment/customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.customer_name\",\"parentRole\":\"payment\"}},\"parentSettings\":{\"allocationOrder\":{\"alias\":\"orders\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.ident\",\"parentRole\":\"allocationOrder\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.ts\",\"parentRole\":\"allocationOrder\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.amount_total\",\"parentRole\":\"allocationOrder\"},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.amount_discounted\",\"parentRole\":\"allocationOrder\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.amount_paid\",\"parentRole\":\"allocationOrder\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.amount_un_paid\",\"parentRole\":\"allocationOrder\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.is_ready\",\"parentRole\":\"allocationOrder\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.approving_officer\",\"parentRole\":\"allocationOrder\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.officer_item_usage_approval\",\"parentRole\":\"allocationOrder\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.unresolved_usage_count\",\"parentRole\":\"allocationOrder\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.placed_date\",\"parentRole\":\"allocationOrder\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.due_date\",\"parentRole\":\"allocationOrder\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.salesrep_name\",\"parentRole\":\"allocationOrder\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.customer_name\",\"parentRole\":\"allocationOrder\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.cloned_from_order_ident\",\"parentRole\":\"allocationOrder\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.item_count\",\"parentRole\":\"allocationOrder\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.allocationOrder.empsales_ident\",\"parentRole\":\"allocationOrder\"}}},\"payment\":{\"alias\":\"payments\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.ident\",\"parentRole\":\"payment\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.ts\",\"parentRole\":\"payment\"},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.amount\",\"parentRole\":\"payment\"},\"amount_un_disbursed\":{\"name\":\"amount_un_disbursed\",\"alias\":\"Amount Un Disbursed\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.amount_un_disbursed\",\"parentRole\":\"payment\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.placed_date\",\"parentRole\":\"payment\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.payment.customer_name\",\"parentRole\":\"payment\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"lineitemsList\":{\"name\":\"lineitemsList\",\"tableName\":\"lineitems\",\"alias\":\"Line Items\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":90.08693411026445},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":181.71428571428572},\"product_name\":{\"name\":\"product_name\",\"alias\":\"Product Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"product_name\",\"width\":360.3477364410578},\"quantity_ordered\":{\"name\":\"quantity_ordered\",\"alias\":\"Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"quantity_ordered\",\"width\":86.41304347826087},\"part_price\":{\"name\":\"part_price\",\"alias\":\"Part Price\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"part_price\"},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount\",\"width\":99.15228597041683},\"kit_quantity_ordered\":{\"name\":\"kit_quantity_ordered\",\"alias\":\"Kit Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"kit_quantity_ordered\"},\"kit_number_required\":{\"name\":\"kit_number_required\",\"alias\":\"Kit Number Required\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"kit_number_required\"},\"kit_component_count\":{\"name\":\"kit_component_count\",\"alias\":\"Kit Component Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"kit_component_count\"},\"kit_item_ident\":{\"name\":\"kit_item_ident\",\"alias\":\"Kit Item Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"kit_item_ident\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BOOLEAN\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_ready\"},\"order_ident\":{\"name\":\"order_ident\",\"alias\":\"Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"order_ident\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":90.08693411026445},\"product_name\":{\"name\":\"product_name\",\"alias\":\"Product Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"product_name\",\"width\":360.3477364410578},\"quantity_ordered\":{\"name\":\"quantity_ordered\",\"alias\":\"Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"quantity_ordered\",\"width\":86.41304347826087},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount\",\"width\":99.15228597041683}},\"parentSettings\":{\"kitItem\":{\"alias\":\"lineitems\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.ident\",\"parentRole\":\"kitItem\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.ts\",\"parentRole\":\"kitItem\"},\"product_name\":{\"name\":\"product_name\",\"alias\":\"Product Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.product_name\",\"parentRole\":\"kitItem\"},\"quantity_ordered\":{\"name\":\"quantity_ordered\",\"alias\":\"Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.quantity_ordered\",\"parentRole\":\"kitItem\"},\"part_price\":{\"name\":\"part_price\",\"alias\":\"Part Price\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.part_price\",\"parentRole\":\"kitItem\"},\"amount\":{\"name\":\"amount\",\"alias\":\"Amount\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.amount\",\"parentRole\":\"kitItem\"},\"kit_quantity_ordered\":{\"name\":\"kit_quantity_ordered\",\"alias\":\"Kit Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.kit_quantity_ordered\",\"parentRole\":\"kitItem\"},\"kit_number_required\":{\"name\":\"kit_number_required\",\"alias\":\"Kit Number Required\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.kit_number_required\",\"parentRole\":\"kitItem\"},\"kit_component_count\":{\"name\":\"kit_component_count\",\"alias\":\"Kit Component Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.kit_component_count\",\"parentRole\":\"kitItem\"},\"kit_item_ident\":{\"name\":\"kit_item_ident\",\"alias\":\"Kit Item Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.kit_item_ident\",\"parentRole\":\"kitItem\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.notes\",\"parentRole\":\"kitItem\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BOOLEAN\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.is_ready\",\"parentRole\":\"kitItem\"},\"order_ident\":{\"name\":\"order_ident\",\"alias\":\"Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.kitItem.order_ident\",\"parentRole\":\"kitItem\"}}},\"product\":{\"alias\":\"products\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.name\",\"parentRole\":\"product\"},\"price\":{\"name\":\"price\",\"alias\":\"Price\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.price\",\"parentRole\":\"product\"},\"quantity_on_hand\":{\"name\":\"quantity_on_hand\",\"alias\":\"Quantity On Hand\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.quantity_on_hand\",\"parentRole\":\"product\"},\"total_quantity_ordered\":{\"name\":\"total_quantity_ordered\",\"alias\":\"Total Quantity Ordered\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.total_quantity_ordered\",\"parentRole\":\"product\"},\"quantity_reorder\":{\"name\":\"quantity_reorder\",\"alias\":\"Quantity Reorder\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.quantity_reorder\",\"parentRole\":\"product\"},\"is_reorder_required\":{\"name\":\"is_reorder_required\",\"alias\":\"Is Reorder Required\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.is_reorder_required\",\"parentRole\":\"product\"},\"count_components\":{\"name\":\"count_components\",\"alias\":\"Count Components\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.count_components\",\"parentRole\":\"product\"},\"sum_components_value\":{\"name\":\"sum_components_value\",\"alias\":\"Sum Components Value\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.sum_components_value\",\"parentRole\":\"product\"},\"needs_usage_terms\":{\"name\":\"needs_usage_terms\",\"alias\":\"Needs Usage Terms\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.needs_usage_terms\",\"parentRole\":\"product\"},\"is_active\":{\"name\":\"is_active\",\"alias\":\"Is Active\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.is_active\",\"parentRole\":\"product\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.notes\",\"parentRole\":\"product\"},\"is_secret\":{\"name\":\"is_secret\",\"alias\":\"Is Secret\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.is_secret\",\"parentRole\":\"product\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.product.ts\",\"parentRole\":\"product\"}}},\"itemOrder\":{\"alias\":\"orders\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.ident\",\"parentRole\":\"itemOrder\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.ts\",\"parentRole\":\"itemOrder\"},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.amount_total\",\"parentRole\":\"itemOrder\"},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.amount_discounted\",\"parentRole\":\"itemOrder\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.amount_paid\",\"parentRole\":\"itemOrder\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.amount_un_paid\",\"parentRole\":\"itemOrder\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.is_ready\",\"parentRole\":\"itemOrder\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.approving_officer\",\"parentRole\":\"itemOrder\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.officer_item_usage_approval\",\"parentRole\":\"itemOrder\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.unresolved_usage_count\",\"parentRole\":\"itemOrder\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.placed_date\",\"parentRole\":\"itemOrder\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.due_date\",\"parentRole\":\"itemOrder\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.salesrep_name\",\"parentRole\":\"itemOrder\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.customer_name\",\"parentRole\":\"itemOrder\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.cloned_from_order_ident\",\"parentRole\":\"itemOrder\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.item_count\",\"parentRole\":\"itemOrder\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.itemOrder.empsales_ident\",\"parentRole\":\"itemOrder\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[{\"title\":\"Order\",\"columns\":[\"ident\",\"is_ready\",\"salesrep_name\"],\"$$hashKey\":\"3PN\"},{\"title\":\"Financial\",\"columns\":[\"amount_un_paid\",\"amount_paid\",\"amount_total\",\"amount_discounted\",\"salesRep/name\"],\"$$hashKey\":\"4GL\"},{\"title\":\"Scheduling\",\"columns\":[\"placed_date\",\"due_date\"],\"$$hashKey\":\"4GP\"},{\"title\":\"Admin\",\"columns\":[\"customer_name\",\"approving_officer\",\"officer_item_usage_approval\",\"cloned_from_order_ident\"],\"$$hashKey\":\"4GT\"}],\"labelPlacement\":\"Left\"}"
+          },
+          {
+            "table_name": "employees",
+            "json": "{\"name\":\"employees\",\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":176.44444444444446,\"$$hashKey\":\"7MB\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[{\"expression\":\"row.employee_type == \\\"exempt\\\"\",\"selector\":\".column-container\",\"onTrue\":\"display:block;\",\"onFalse\":\"display:none;\"}],\"dataSource\":\"base_salary\",\"width\":44.111111111111114,\"$$hashKey\":\"7MC\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_type\",\"width\":176.44444444444446,\"$$hashKey\":\"7MD\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"7ME\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"visible_to\",\"$$hashKey\":\"7MF\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"department_name\",\"$$hashKey\":\"7MG\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"on_loan_department_name\",\"$$hashKey\":\"7MH\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\",\"$$hashKey\":\"7MI\"}},\"gridColumns\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":176.44444444444446,\"$$hashKey\":\"7MB\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[{\"expression\":\"row.employee_type == \\\"exempt\\\"\",\"selector\":\".column-container\",\"onTrue\":\"display:block;\",\"onFalse\":\"display:none;\"}],\"dataSource\":\"base_salary\",\"width\":44.111111111111114,\"$$hashKey\":\"7MC\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_type\",\"width\":176.44444444444446,\"$$hashKey\":\"7MD\"}},\"scalarColumns\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":176.44444444444446,\"$$hashKey\":\"7MB\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[{\"expression\":\"row.employee_type == \\\"exempt\\\"\",\"selector\":\".column-container\",\"onTrue\":\"display:block;\",\"onFalse\":\"display:none;\"}],\"dataSource\":\"base_salary\",\"width\":44.111111111111114,\"$$hashKey\":\"7MC\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_type\",\"width\":176.44444444444446,\"$$hashKey\":\"7MD\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"$$hashKey\":\"7ME\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"visible_to\",\"$$hashKey\":\"7MF\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"department_name\",\"$$hashKey\":\"7MG\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"on_loan_department_name\",\"$$hashKey\":\"7MH\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\",\"$$hashKey\":\"7MI\"}},\"parentSettings\":{\"onLoanTo\":{\"name\":\"onLoanTo\",\"alias\":\"onLoanTo\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.name\",\"parentRole\":\"onLoanTo\"},\"managed_by\":{\"name\":\"managed_by\",\"alias\":\"Managed By\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.managed_by\",\"parentRole\":\"onLoanTo\"},\"head_department_name\":{\"name\":\"head_department_name\",\"alias\":\"Head Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.head_department_name\",\"parentRole\":\"onLoanTo\"},\"sum_sub_department_budget\":{\"name\":\"sum_sub_department_budget\",\"alias\":\"Sum Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.sum_sub_department_budget\",\"parentRole\":\"onLoanTo\"},\"budget\":{\"name\":\"budget\",\"alias\":\"Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.budget\",\"parentRole\":\"onLoanTo\"},\"budget_with_sub_department_budget\":{\"name\":\"budget_with_sub_department_budget\",\"alias\":\"Budget With Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.budget_with_sub_department_budget\",\"parentRole\":\"onLoanTo\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.notes\",\"parentRole\":\"onLoanTo\"},\"secret_agenda\":{\"name\":\"secret_agenda\",\"alias\":\"Secret Agenda\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.secret_agenda\",\"parentRole\":\"onLoanTo\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.onLoanTo.ts\",\"parentRole\":\"onLoanTo\"}}},\"reportsTo\":{\"name\":\"reportsTo\",\"alias\":\"reportsTo\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.name\",\"parentRole\":\"reportsTo\"},\"managed_by\":{\"name\":\"managed_by\",\"alias\":\"Managed By\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.managed_by\",\"parentRole\":\"reportsTo\"},\"head_department_name\":{\"name\":\"head_department_name\",\"alias\":\"Head Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.head_department_name\",\"parentRole\":\"reportsTo\"},\"sum_sub_department_budget\":{\"name\":\"sum_sub_department_budget\",\"alias\":\"Sum Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.sum_sub_department_budget\",\"parentRole\":\"reportsTo\"},\"budget\":{\"name\":\"budget\",\"alias\":\"Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.budget\",\"parentRole\":\"reportsTo\"},\"budget_with_sub_department_budget\":{\"name\":\"budget_with_sub_department_budget\",\"alias\":\"Budget With Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.budget_with_sub_department_budget\",\"parentRole\":\"reportsTo\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.notes\",\"parentRole\":\"reportsTo\"},\"secret_agenda\":{\"name\":\"secret_agenda\",\"alias\":\"Secret Agenda\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.secret_agenda\",\"parentRole\":\"reportsTo\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.reportsTo.ts\",\"parentRole\":\"reportsTo\"}}}},\"childrenSettings\":{\"departmentsList\":{\"name\":\"departmentsList\",\"tableName\":\"departments\",\"alias\":\"Departments\",\"displayed\":true,\"selected\":true,\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":126},\"managed_by\":{\"name\":\"managed_by\",\"alias\":\"Managed By\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"managed_by\",\"width\":126},\"head_department_name\":{\"name\":\"head_department_name\",\"alias\":\"Head Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"head_department_name\",\"width\":126},\"sum_sub_department_budget\":{\"name\":\"sum_sub_department_budget\",\"alias\":\"Sum Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"sum_sub_department_budget\"},\"budget\":{\"name\":\"budget\",\"alias\":\"Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"budget\"},\"budget_with_sub_department_budget\":{\"name\":\"budget_with_sub_department_budget\",\"alias\":\"Budget With Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"budget_with_sub_department_budget\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"notes\"},\"secret_agenda\":{\"name\":\"secret_agenda\",\"alias\":\"Secret Agenda\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"secret_agenda\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\"}},\"gridColumns\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"name\",\"width\":126},\"managed_by\":{\"name\":\"managed_by\",\"alias\":\"Managed By\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"managed_by\",\"width\":126},\"head_department_name\":{\"name\":\"head_department_name\",\"alias\":\"Head Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"head_department_name\",\"width\":126}},\"parentSettings\":{\"manager\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.name\",\"parentRole\":\"manager\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.base_salary\",\"parentRole\":\"manager\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.employee_type\",\"parentRole\":\"manager\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.ts\",\"parentRole\":\"manager\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.visible_to\",\"parentRole\":\"manager\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.department_name\",\"parentRole\":\"manager\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.on_loan_department_name\",\"parentRole\":\"manager\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.manager.notes\",\"parentRole\":\"manager\"}}},\"headDepartment\":{\"alias\":\"departments\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.name\",\"parentRole\":\"headDepartment\"},\"managed_by\":{\"name\":\"managed_by\",\"alias\":\"Managed By\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.managed_by\",\"parentRole\":\"headDepartment\"},\"head_department_name\":{\"name\":\"head_department_name\",\"alias\":\"Head Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.head_department_name\",\"parentRole\":\"headDepartment\"},\"sum_sub_department_budget\":{\"name\":\"sum_sub_department_budget\",\"alias\":\"Sum Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.sum_sub_department_budget\",\"parentRole\":\"headDepartment\"},\"budget\":{\"name\":\"budget\",\"alias\":\"Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.budget\",\"parentRole\":\"headDepartment\"},\"budget_with_sub_department_budget\":{\"name\":\"budget_with_sub_department_budget\",\"alias\":\"Budget With Sub Department Budget\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.budget_with_sub_department_budget\",\"parentRole\":\"headDepartment\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.notes\",\"parentRole\":\"headDepartment\"},\"secret_agenda\":{\"name\":\"secret_agenda\",\"alias\":\"Secret Agenda\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.secret_agenda\",\"parentRole\":\"headDepartment\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.headDepartment.ts\",\"parentRole\":\"headDepartment\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"employee_auditsList\":{\"name\":\"employee_auditsList\",\"tableName\":\"employee_audits\",\"alias\":\"Employee Audits\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"base_salary\",\"width\":94.5},\"base_salary_old\":{\"name\":\"base_salary_old\",\"alias\":\"Base Salary Old\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"base_salary_old\"},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_name\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"base_salary\",\"width\":94.5}},\"parentSettings\":{\"auditedEmployee\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.name\",\"parentRole\":\"auditedEmployee\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.base_salary\",\"parentRole\":\"auditedEmployee\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.employee_type\",\"parentRole\":\"auditedEmployee\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.ts\",\"parentRole\":\"auditedEmployee\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.visible_to\",\"parentRole\":\"auditedEmployee\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.department_name\",\"parentRole\":\"auditedEmployee\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.on_loan_department_name\",\"parentRole\":\"auditedEmployee\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.auditedEmployee.notes\",\"parentRole\":\"auditedEmployee\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"empsalesList\":{\"name\":\"empsalesList\",\"tableName\":\"empsales\",\"alias\":\"Empsales\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":54},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":108},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_name\",\"width\":216},\"year\":{\"name\":\"year\",\"alias\":\"Year\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"year\"},\"month\":{\"name\":\"month\",\"alias\":\"Month\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"month\"},\"total_sales\":{\"name\":\"total_sales\",\"alias\":\"Total Sales\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"total_sales\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":54},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":108},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_name\",\"width\":216}},\"parentSettings\":{\"employee\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.name\",\"parentRole\":\"employee\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.base_salary\",\"parentRole\":\"employee\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.employee_type\",\"parentRole\":\"employee\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.ts\",\"parentRole\":\"employee\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.visible_to\",\"parentRole\":\"employee\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.department_name\",\"parentRole\":\"employee\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.on_loan_department_name\",\"parentRole\":\"employee\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employee.notes\",\"parentRole\":\"employee\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"ordersList\":{\"name\":\"ordersList\",\"tableName\":\"orders\",\"alias\":\"Orders\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"width\":94.5},\"amount_discounted\":{\"name\":\"amount_discounted\",\"alias\":\"Amount Discounted\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_discounted\"},\"amount_paid\":{\"name\":\"amount_paid\",\"alias\":\"Amount Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_paid\"},\"amount_un_paid\":{\"name\":\"amount_un_paid\",\"alias\":\"Amount Un Paid\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_un_paid\"},\"is_ready\":{\"name\":\"is_ready\",\"alias\":\"Is Ready\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"is_ready\"},\"approving_officer\":{\"name\":\"approving_officer\",\"alias\":\"Approving Officer\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"approving_officer\"},\"officer_item_usage_approval\":{\"name\":\"officer_item_usage_approval\",\"alias\":\"Officer Item Usage Approval\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"officer_item_usage_approval\"},\"unresolved_usage_count\":{\"name\":\"unresolved_usage_count\",\"alias\":\"Unresolved Usage Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"unresolved_usage_count\"},\"placed_date\":{\"name\":\"placed_date\",\"alias\":\"Placed Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"placed_date\"},\"due_date\":{\"name\":\"due_date\",\"alias\":\"Due Date\",\"type\":\"DATE\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"due_date\"},\"salesrep_name\":{\"name\":\"salesrep_name\",\"alias\":\"Salesrep Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"salesrep_name\"},\"customer_name\":{\"name\":\"customer_name\",\"alias\":\"Customer Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"customer_name\"},\"cloned_from_order_ident\":{\"name\":\"cloned_from_order_ident\",\"alias\":\"Cloned From Order Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"cloned_from_order_ident\"},\"item_count\":{\"name\":\"item_count\",\"alias\":\"Item Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"item_count\"},\"empsales_ident\":{\"name\":\"empsales_ident\",\"alias\":\"Empsales Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"empsales_ident\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"amount_total\":{\"name\":\"amount_total\",\"alias\":\"Amount Total\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"amount_total\",\"width\":94.5}},\"parentSettings\":{\"empSales\":{\"alias\":\"empsales\",\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ident\",\"parentRole\":\"empSales\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.ts\",\"parentRole\":\"empSales\"},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.employee_name\",\"parentRole\":\"empSales\"},\"year\":{\"name\":\"year\",\"alias\":\"Year\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.year\",\"parentRole\":\"empSales\"},\"month\":{\"name\":\"month\",\"alias\":\"Month\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.month\",\"parentRole\":\"empSales\"},\"total_sales\":{\"name\":\"total_sales\",\"alias\":\"Total Sales\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.empSales.total_sales\",\"parentRole\":\"empSales\"}}},\"salesRep\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.name\",\"parentRole\":\"salesRep\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.base_salary\",\"parentRole\":\"salesRep\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.employee_type\",\"parentRole\":\"salesRep\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.ts\",\"parentRole\":\"salesRep\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.visible_to\",\"parentRole\":\"salesRep\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.department_name\",\"parentRole\":\"salesRep\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.on_loan_department_name\",\"parentRole\":\"salesRep\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.salesRep.notes\",\"parentRole\":\"salesRep\"}}},\"customer\":{\"alias\":\"customers\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.name\",\"parentRole\":\"customer\"},\"balance\":{\"name\":\"balance\",\"alias\":\"Balance\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":false,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.balance\",\"parentRole\":\"customer\"},\"credit_limit\":{\"name\":\"credit_limit\",\"alias\":\"Credit Limit\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.credit_limit\",\"parentRole\":\"customer\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.notes\",\"parentRole\":\"customer\"},\"customer_level\":{\"name\":\"customer_level\",\"alias\":\"Customer Level\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.customer_level\",\"parentRole\":\"customer\"},\"is_credit_pre_approved\":{\"name\":\"is_credit_pre_approved\",\"alias\":\"Is Credit Pre Approved\",\"type\":\"BIT\",\"generic_type\":\"boolean\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.is_credit_pre_approved\",\"parentRole\":\"customer\"},\"big_order_count\":{\"name\":\"big_order_count\",\"alias\":\"Big Order Count\",\"type\":\"INTEGER\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.big_order_count\",\"parentRole\":\"customer\"},\"max_unpaid_order\":{\"name\":\"max_unpaid_order\",\"alias\":\"Max Unpaid Order\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.max_unpaid_order\",\"parentRole\":\"customer\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.customer.ts\",\"parentRole\":\"customer\"}}}},\"groups\":[],\"labelPlacement\":\"left\"},\"employee_raise_serviceList\":{\"name\":\"employee_raise_serviceList\",\"tableName\":\"employee_raise_service\",\"alias\":\"Employee Raise Service\",\"displayed\":true,\"selected\":false,\"columnFormats\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"percent_raise_to_give\":{\"name\":\"percent_raise_to_give\",\"alias\":\"Percent Raise To Give\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"percent_raise_to_give\",\"width\":94.5},\"current_salary\":{\"name\":\"current_salary\",\"alias\":\"Current Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"current_salary\"},\"new_salary\":{\"name\":\"new_salary\",\"alias\":\"New Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"new_salary\"},\"employee_name\":{\"name\":\"employee_name\",\"alias\":\"Employee Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"employee_name\"}},\"gridColumns\":{\"ident\":{\"name\":\"ident\",\"alias\":\"Ident\",\"type\":\"BIGINT\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ident\",\"width\":94.5},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"ts\",\"width\":189},\"percent_raise_to_give\":{\"name\":\"percent_raise_to_give\",\"alias\":\"Percent Raise To Give\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"percent_raise_to_give\",\"width\":94.5}},\"parentSettings\":{\"employeeForRaise\":{\"alias\":\"employees\",\"columnFormats\":{\"name\":{\"name\":\"name\",\"alias\":\"Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.name\",\"parentRole\":\"employeeForRaise\"},\"base_salary\":{\"name\":\"base_salary\",\"alias\":\"Base Salary\",\"type\":\"DECIMAL\",\"generic_type\":\"number\",\"is_editable\":true,\"mask\":\"$0,0.00\",\"maskType\":\"numeric\",\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.base_salary\",\"parentRole\":\"employeeForRaise\"},\"employee_type\":{\"name\":\"employee_type\",\"alias\":\"Employee Type\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.employee_type\",\"parentRole\":\"employeeForRaise\"},\"ts\":{\"name\":\"ts\",\"alias\":\"Ts\",\"type\":\"TIMESTAMP\",\"generic_type\":\"date\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.ts\",\"parentRole\":\"employeeForRaise\"},\"visible_to\":{\"name\":\"visible_to\",\"alias\":\"Visible To\",\"type\":\"CHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.visible_to\",\"parentRole\":\"employeeForRaise\"},\"department_name\":{\"name\":\"department_name\",\"alias\":\"Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.department_name\",\"parentRole\":\"employeeForRaise\"},\"on_loan_department_name\":{\"name\":\"on_loan_department_name\",\"alias\":\"On Loan Department Name\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.on_loan_department_name\",\"parentRole\":\"employeeForRaise\"},\"notes\":{\"name\":\"notes\",\"alias\":\"Notes\",\"type\":\"VARCHAR\",\"generic_type\":\"text\",\"is_editable\":true,\"mask\":null,\"maskType\":null,\"binaryType\":null,\"extensionType\":null,\"eval\":[],\"dataSource\":\"__internal.parentRows.employeeForRaise.notes\",\"parentRole\":\"employeeForRaise\"}}}},\"groups\":[],\"labelPlacement\":\"left\"}},\"groups\":[],\"labelPlacement\":\"Left\"}"
+          }
+        ]
+      }
+    ],
+    "Rules": [
+      {
+        "entity_name": "customers",
+        "prop4": "javascript",
+        "rule_text1": "return row.balance <= row.credit_limit",
+        "auto_name": "Validation return row.balance <= row.credit_limit",
+        "comments": "PlaceOrder.CheckCredit",
+        "active": true,
+        "ruletype_ident": 5
+      },
+      {
+        "entity_name": "customers",
+        "attribute_name": "balance",
+        "rule_text1": "ordersList",
+        "rule_text2": "is_ready = true",
+        "rule_text3": "amount_un_paid",
+        "auto_name": "Derive balance as sum(ordersList.amount_un_paid where is_ready = true)",
+        "comments": "PlaceOrder.CheckCredit; MakeOrderReady; Allocate-Payment; Delete Order",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "departments",
+        "attribute_name": "budget_with_sub_department_budget",
+        "prop4": "javascript",
+        "rule_text1": "return row.budget + row.sum_sub_department_budget",
+        "auto_name": "Derive budget_with_sub_department_budget as return row.budget + row.sum_sub_department_budget",
+        "comments": "Budget-Rollup",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "departments",
+        "attribute_name": "sum_sub_department_budget",
+        "rule_text1": "departmentsList",
+        "rule_text3": "budget_with_sub_department_budget",
+        "auto_name": "Derive sum_sub_department_budget as sum(departmentsList.budget_with_sub_department_budget)",
+        "comments": "Budget-Rollup",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "employees",
+        "prop3": "insert,update,delete",
+        "prop4": "javascript",
+        "rule_text1": "if (logicContext.verb == \"UPDATE\") {\n  SysLogic.insertChildFrom(\"employee_audits\", logicContext);\n  row.notes = \"Hello from a JavaScript rule for \" + row.name;\n  logicContext.update(row);\n}",
+        "name": "Audit Employee Changes",
+        "auto_name": "Event: if (logicContext.verb == \"UPDATE\") {\n  SysLogic.insertChildFrom(\"employee_audits\", logicContext);\n  row.notes = \"Hello from a JavaScript rul...",
+        "verbs": "",
+        "comments": "JavaScript test",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "empsales",
+        "attribute_name": "total_sales",
+        "rule_text1": "ordersList",
+        "rule_text3": "amount_discounted",
+        "auto_name": "Derive total_sales as sum(ordersList.amount_discounted)",
+        "comments": "GroupOrdersByRepMonth",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "lineitems",
+        "prop4": "javascript",
+        "rule_text1": "var isAKit = row.product.count_components;  // should always resolve to product\n log.error(\"!my product: \" + row.product);\n log.error(\"!components: \"  + isAKit + \", logicContext.verb: \" + logicContext.verb);\n log.error(\"!kit_Item_ident: \"  + row.kit_item_ident);\n log.error(\"!kitItem: \"  + row.kitItem);\n if (logicContext.verb == \"INSERT\" && row.product.count_components > 0) {\n SysLogic.insertChildrenFrom(\"lineitems\", row.product.components, logicContext);\n }",
+        "name": "Kit copies product.components to subItems",
+        "auto_name": "Event: var isAKit = row.product.count_components;  // should always resolve to product\n log.error(\"!my product: \" + row.product);\n log.error(\"!comp...",
+        "verbs": "INSERT",
+        "comments": "BillOfMaterials.Explosion",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "lineitems",
+        "attribute_name": "amount",
+        "prop4": "javascript",
+        "rule_text1": "return row.part_price * row.quantity_ordered",
+        "auto_name": "Derive amount as return row.part_price * row.quantity_ordered",
+        "comments": "PlaceOrder.CheckCredit;",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "lineitems",
+        "attribute_name": "is_ready",
+        "prop4": "javascript",
+        "rule_text1": "return row.itemOrder.is_ready",
+        "auto_name": "Derive is_ready as return row.itemOrder.is_ready",
+        "comments": "MakeOrderReady;",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "lineitems",
+        "attribute_name": "kit_component_count",
+        "rule_text1": "lineitemsList",
+        "auto_name": "Derive kit_component_count as count(lineitemsList)",
+        "comments": "BillOfMaterials.Explosion",
+        "active": true,
+        "ruletype_ident": 2
+      },
+      {
+        "entity_name": "lineitems",
+        "attribute_name": "part_price",
+        "rule_text1": "product",
+        "rule_text2": "price",
+        "auto_name": "Derive part_price as parentcopy(product.price)",
+        "comments": "PlaceOrder.CheckCredit",
+        "active": true,
+        "ruletype_ident": 4
+      },
+      {
+        "entity_name": "lineitems",
+        "attribute_name": "quantity_ordered",
+        "prop4": "javascript",
+        "rule_text1": "return row.kitItem !== null ?\n    row.kit_number_required * row.kitItem.quantity_ordered :\n    row.quantity_ordered",
+        "auto_name": "Derive quantity_ordered as return row.kitItem !== null ?\n    row.kit_number_required * row.kitItem.quantity_ordered :\n    row.quantity_ordered",
+        "comments": "BillOfMaterials.Explosion",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "orders",
+        "prop4": "javascript",
+        "rule_text1": "return row.item_count > 0",
+        "auto_name": "Commit validation return row.item_count > 0",
+        "comments": "PlaceOrder.NoEmptyOrders",
+        "active": true,
+        "ruletype_ident": 6
+      },
+      {
+        "entity_name": "orders",
+        "prop3": "insert,update,delete",
+        "prop4": "javascript",
+        "rule_text1": "var enabled = false;  // under construction\nif (row.salesrep_name === null)\n    row.salesrep_name = \"charlie\";  // he needs the help\nif (enabled === false || row.salesrep_name === null || row.empsales_ident !== null) return;\n\nvar month = 3; //moment(row.placed_date).month(Number);\nvar year = 2014; //moment(row.placed_date).year(Number);\nvar employee_name = row.salesrep_name;\nvar empsalesSQL = \"select * from empsales where month=\" + month + \" and year=\" + year + \" and employee_name = '\" + employee_name + \"'\" ;\nlog.debug(\"**** seeking empsalesSQL: \" + empsalesSQL);\nvar empsalesRow = null;\nvar rows = logicContext.getRowsByQuery(\"empsales\", empsalesSQL);\nfor (var i = 0; i < rows.length; i++) {\n    if (empsalesRow === null) {\n        empsalesRow = rows[i];\n    } else {\n        throw \"orders.GroupSales error - 2 rows returned for primary key query: \" + rows[i];\n    }\n}\nif (empsalesRow === null) {\n    log.debug(\"**** creating empsales: \" + employee_name + year + month);\n    empsalesRow = logicContext.createPersistentBean(\"empsales\");\n    empsalesRow.employee_name = employee_name;\n    empsalesRow.month = month;\n    empsalesRow.year = year;\n    logicContext.insert(empsalesRow);\n    log.debug(\"**** empsales created: \" + empsalesRow);\n} else {\n    log.debug(\"*** empsales already existed\")\n}\nrow.empsales_ident = empsalesRow.ident; // row.empSales.ident\nlog.debug(\"**** order linked to empsales: \" + row.empSales);",
+        "name": "Group sale totals for salesRep/Mo",
+        "auto_name": "Event: var enabled = false;  // under construction\nif (row.salesrep_name === null)\n    row.salesrep_name = \"charlie\";  // he needs the help\nif (ena...",
+        "verbs": "",
+        "comments": "JavaScript test",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "orders",
+        "prop3": "insert,update,delete",
+        "prop4": "javascript",
+        "rule_text1": "var arg = req.getUserProperties().get(\"clone\");\nlog.debug(\"cloneXX: checking request arg.clone parameter was provided: \" + arg);\nif (arg !== null && logicContext.logicNestLevel < 1) {\n    log.debug(\"cloning: \" + row);\n    var deepCopy = [\"lineitemsList\"];\n    SysLogic.copyTo(\"orders\", logicContext, deepCopy, false);\n}\n ",
+        "name": "Clone Order per URL arg.clone",
+        "auto_name": "Event: var arg = req.getUserProperties().get(\"clone\");\nlog.debug(\"cloneXX: checking request arg.clone parameter was provided: \" + arg);\nif (arg !==...",
+        "verbs": "",
+        "comments": "JavaScript test",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "amount_discounted",
+        "prop4": "javascript",
+        "rule_text1": "return row.amount_total *\n       row.customer.customer_level == \"P\" ? 0.95 : 1.00",
+        "auto_name": "Derive amount_discounted as return row.amount_total *\n       row.customer.customer_level == \"P\" ? 0.95 : 1.00",
+        "comments": "PlaceOrder.CheckCredit; DeleteOrder",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "amount_paid",
+        "rule_text1": "payment_order_allocationsList",
+        "rule_text3": "amount",
+        "auto_name": "Derive amount_paid as sum(payment_order_allocationsList.amount)",
+        "comments": "AllocatePayment",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "amount_total",
+        "rule_text1": "lineitemsList",
+        "rule_text2": "kit_item_ident = null",
+        "rule_text3": "amount",
+        "auto_name": "Derive amount_total as sum(lineitemsList.amount where kit_item_ident = null)",
+        "comments": "PlaceOrder.CheckCredit; DeleteOrder",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "amount_un_paid",
+        "prop4": "javascript",
+        "rule_text1": "return row.amount_total - row.amount_paid",
+        "auto_name": "Derive amount_un_paid as return row.amount_total - row.amount_paid",
+        "comments": "PlaceOrder.CheckCredit; DeleteOrder; AllocatePayment",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "due_date",
+        "prop4": "javascript",
+        "rule_text1": "\n if (row.due_date === null)\n return new Date(moment(row.placed_date).add('months', 1)); // moment();\n else\n return row.due_date;\n ",
+        "auto_name": "Derive due_date as \n if (row.due_date === null)\n return new Date(moment(row.placed_date).add('months', 1)); // moment();\n else\n return row.due_date;\n ",
+        "comments": "PlaceOrder.CheckCredit;",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "item_count",
+        "rule_text1": "lineitemsList",
+        "auto_name": "Derive item_count as count(lineitemsList)",
+        "comments": "Order.NoEmptyOrders",
+        "active": true,
+        "ruletype_ident": 2
+      },
+      {
+        "entity_name": "orders",
+        "attribute_name": "placed_date",
+        "prop4": "javascript",
+        "rule_text1": "\n if (row.placed_date === null)\n return new Date(); // moment();\n else\n return row.placed_date;\n ",
+        "auto_name": "Derive placed_date as \n if (row.placed_date === null)\n return new Date(); // moment();\n else\n return row.placed_date;\n ",
+        "comments": "PlaceOrder.CheckCredit;",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "payment_order_allocations",
+        "attribute_name": "amount",
+        "prop4": "javascript",
+        "rule_text1": "return Math.min(row.allocationOrder.amount_un_paid, row.amount)",
+        "auto_name": "Derive amount as return Math.min(row.allocationOrder.amount_un_paid, row.amount)",
+        "verbs": "INSERT",
+        "comments": "Allocate-Payment",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "payments",
+        "prop3": "insert",
+        "prop4": "javascript",
+        "rule_text1": "if (logicContext.verb == \"INSERT\") {\n  SysLogic.allocateFromToUndisbursed(\n    logicContext,\n    SysLogic.findWhere(\n      row.paymentCustomer.ordersList,\n      \"row.is_ready == true && row.amount_un_paid > 0\",\n      \"placed_date a\"),\n    \"payment_order_allocations\",\n    \"amount_un_disbursed\");\n}",
+        "name": "Allocate Payments to outstanding orders",
+        "auto_name": "Event: if (logicContext.verb == \"INSERT\") {\n  SysLogic.allocateFromToUndisbursed(\n    logicContext,\n    SysLogic.findWhere(\n      row.paymentCustom...",
+        "verbs": "",
+        "comments": "Allocate-Payment",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "product_billofmaterials",
+        "attribute_name": "value",
+        "prop4": "javascript",
+        "rule_text1": "return row.kit_number_required * row.product.price",
+        "auto_name": "Derive value as return row.kit_number_required * row.product.price",
+        "comments": "BillOfMaterials.PriceRollup",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "products",
+        "prop3": "insert",
+        "prop4": "javascript",
+        "rule_text1": "if (row.name == \"Dynamite\" && row.total_quantity_ordered != oldRow.total_quantity_ordered) {\n    log.debug(\"***controlled substance - notify authorities\");\n    var json = JSON.parse(req.json);  // convert req's JSON string to JSON objects\n    var custName = json.customer;     // get the name from the request\n    var options = { filter: \"name = '\" + custName + \"'\" };\n    var custAccount = SysUtility.getResource(\"cust\", options);  // get resource JSON\n    log.debug(\"***sending message\" + JSON.stringify(custAccount[0]));\n}",
+        "name": "Controlled Substance Reporting",
+        "auto_name": "Event: if (row.name == \"Dynamite\" && row.total_quantity_ordered != oldRow.total_quantity_ordered) {\n    log.debug(\"***controlled substance - notify...",
+        "verbs": "",
+        "comments": "ControlledSubstanceReporting - report accounts ordering Dynamite; MakeOrderReady",
+        "active": true,
+        "ruletype_ident": 7
+      },
+      {
+        "entity_name": "products",
+        "attribute_name": "count_components",
+        "rule_text1": "components",
+        "auto_name": "Derive count_components as count(components)",
+        "comments": "BillOfMaterials.PriceRollup, BillOfMaterials.Explosion",
+        "active": true,
+        "ruletype_ident": 2
+      },
+      {
+        "entity_name": "products",
+        "attribute_name": "is_reorder_required",
+        "prop4": "javascript",
+        "rule_text1": "return row.quantity_on_hand - row.total_quantity_ordered < row.quantity_reorder",
+        "auto_name": "Derive is_reorder_required as return row.quantity_on_hand - row.total_quantity_ordered < row.quantity_reorder",
+        "comments": "MakeOrderReady",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "products",
+        "attribute_name": "price",
+        "prop4": "javascript",
+        "rule_text1": "return row.count_components > 0 ? row.sum_components_value : row.price",
+        "auto_name": "Derive price as return row.count_components > 0 ? row.sum_components_value : row.price",
+        "comments": "BillOfMaterials.PriceRollup",
+        "active": true,
+        "ruletype_ident": 3
+      },
+      {
+        "entity_name": "products",
+        "attribute_name": "sum_components_value",
+        "rule_text1": "components",
+        "rule_text3": "value",
+        "auto_name": "Derive sum_components_value as sum(components.value)",
+        "comments": "BillOfMaterials.PriceRollup",
+        "active": true,
+        "ruletype_ident": 1
+      },
+      {
+        "entity_name": "products",
+        "attribute_name": "total_quantity_ordered",
+        "rule_text1": "lineitemsList",
+        "rule_text2": "is_ready = true",
+        "rule_text3": "quantity_ordered",
+        "auto_name": "Derive total_quantity_ordered as sum(lineitemsList.quantity_ordered where is_ready = true)",
+        "comments": "MakeOrderReady",
+        "active": true,
+        "ruletype_ident": 1
+      }
+    ],
+    "ApiKeys": [
+      {
+        "ident": 1,
+        "name": "Admin",
+        "apikey": "AdminKey",
+        "status": "A",
+        "logging": "admini=FINE,buslog=FINE,depend=FINE,generl=FINE,persis=FINE,engine=FINE,resrcs=FINE,securi=FINE,sysdbg=FINE,ulogic=FINE"
+      },
+      {
+        "ident": 2,
+        "name": "Guest",
+        "apikey": "GuestKey",
+        "status": "A",
+        "logging": "admini=OFF,buslog=OFF,depend=OFF,generl=OFF,persis=FINE,engine=FINE,resrcs=OFF,securi=OFF,sysdbg=OFF,ulogic=OFF"
+      },
+      {
+        "ident": 3,
+        "name": "Lincoln, A",
+        "apikey": "A.LincolnKey",
+        "status": "A",
+        "logging": "admini=OFF,buslog=OFF,depend=OFF,generl=OFF,persis=FINE,engine=FINE,resrcs=OFF,securi=OFF,sysdbg=OFF,ulogic=OFF",
+        "data": "maxAmount=49, userName=\"A. Lincoln\""
+      },
+      {
+        "ident": 4,
+        "name": "Sample1",
+        "apikey": "Sample1Key",
+        "status": "A",
+        "logging": "admini=OFF,buslog=FINE,depend=OFF,generl=OFF,persis=FINE,engine=FINER,resrcs=OFF,securi=OFF,sysdbg=OFF,ulogic=OFF"
+      },
+      {
+        "ident": 5,
+        "name": "Sample2",
+        "apikey": "Sample2Key",
+        "status": "A"
+      },
+      {
+        "ident": 6,
+        "name": "Sample3",
+        "apikey": "Sample3Key",
+        "status": "A",
+        "data": "maxAmount=200"
+      }
+    ],
+    "EventHandlers": [
+      {
+        "name": "Partner Response",
+        "description": " Return JSON Account Summary (not txsummary)",
+        "code": "var reqResourceName = req.resourceName;\nif (\"POST\" == req.verb && \"abl/sample/v1/cust.orders_c\" == reqResourceName) {\n  delete json.txsummary;\n  delete json.rulesummary;\n  log.debug(\"***return account summary as response\");\n  var reqJson = JSON.parse(req.json);  // convert req's JSON string to JSON objects\n  var custName = reqJson.customer;     // get the name from the request\n  var options = { filter: \"name = '\" + custName + \"'\" };\n  var custAccount = SysUtility.getResource(\"cust\", options);  // get resource JSON\n  json.accountSummary = custAccount;\n} ",
+        "active": true,
+        "eventtype_ident": 2
+      }
+    ],
+    "Handlers": [
+      {
+        "name": "Hello World",
+        "active": true,
+        "url_pattern": "helloWorld",
+        "verbs": "GET",
+        "code": "var helloWorld = { hello : \"world\", goodBye : \"for now\" };\nreturn JSON.stringify(helloWorld);\n"
+      }
+    ],
+    "Roles": [
+      {
+        "name": "Guest",
+        "description": "No stealth bolts",
+        "default_permission": "A",
+        "default_apivisibility": "TVPRM",
+        "ApiKeyRoles": [
+          {
+            "apikey_ident": 2
+          }
+        ],
+        "TablePermissions": [
+          {
+            "name": "No stealth orders",
+            "description": "",
+            "table_name": "orders",
+            "column_names": "*",
+            "predicate": "ident not in (select _o.ident from orders _o  join lineitems _l on _l.order_ident = _o.ident left join products _p on _p.name = _l.product_name where _p.is_secret = true)",
+            "access_type": "R"
+          }
+        ]
+      },
+      {
+        "name": "National administrator",
+        "description": "All but Customer Alpha",
+        "default_permission": "A",
+        "default_apivisibility": "TVPRM",
+        "ApiKeyRoles": [
+          {
+            "apikey_ident": 4
+          }
+        ],
+        "TablePermissions": [
+          {
+            "name": "Customers not Alpha",
+            "description": "",
+            "table_name": "customers",
+            "column_names": "*",
+            "predicate": " name != \"Alpha and Sons\" ",
+            "access_type": "A"
+          }
+        ]
+      },
+      {
+        "name": "Normal user",
+        "description": "Can access selected data",
+        "default_permission": "A",
+        "default_apivisibility": "TVPRM",
+        "ApiKeyRoles": [
+          {
+            "apikey_ident": 6
+          },
+          {
+            "apikey_ident": 3
+          }
+        ],
+        "PermissionData": [
+          {
+            "name": "current_employee",
+            "query": " * from employees where name like '%Lincoln%'",
+            "query_order": 1,
+            "required": true,
+            "code_type": "SQL"
+          }
+        ],
+        "TablePermissions": [
+          {
+            "name": "Access customers",
+            "description": "",
+            "table_name": "customers",
+            "column_names": "name,balance,credit_limit",
+            "predicate": "notes like '%@{current_employee.name}%'",
+            "access_type": "A"
+          },
+          {
+            "name": "Access orders",
+            "description": "",
+            "table_name": "orders",
+            "column_names": "customer_name, salesrep_name, amount_total,placed_date,item_count,approving_officer",
+            "predicate": "amount_total <= @{maxAmount}",
+            "access_type": "A"
+          },
+          {
+            "name": "Access lineitems",
+            "description": "",
+            "table_name": "lineitems",
+            "column_names": "product_name,quantity_ordered,part_price,amount,order_ident",
+            "predicate": "itemOrder.salesrep_name = '@{current_employee.name}'",
+            "access_type": "A"
+          },
+          {
+            "name": "Access payment_order_allocations",
+            "description": "",
+            "table_name": "payment_order_allocations",
+            "column_names": "*",
+            "predicate": "allocationOrder.salesrep_name = '@{current_employee.name}'",
+            "access_type": "R"
+          },
+          {
+            "name": "Access payments",
+            "description": "",
+            "table_name": "payments",
+            "column_names": "*",
+            "access_type": "R"
+          },
+          {
+            "name": "Access products",
+            "description": "",
+            "table_name": "products",
+            "column_names": "*",
+            "predicate": "$.name != 'Shovel'",
+            "access_type": "R"
+          },
+          {
+            "name": "Access depts",
+            "description": "",
+            "table_name": "departments",
+            "column_names": "name,budget",
+            "access_type": "R"
+          },
+          {
+            "name": "Access emps",
+            "description": "",
+            "table_name": "employees",
+            "column_names": "name,employee_type, department_name,notes",
+            "access_type": "R"
+          }
+        ]
+      },
+      {
+        "name": "Read-only admin",
+        "description": "Can read the entire project",
+        "default_permission": "R",
+        "default_apivisibility": "TVPRM",
+        "ApiKeyRoles": [
+          {
+            "apikey_ident": 5
+          }
+        ]
+      },
+      {
+        "name": "System administrator",
+        "description": "Full permissions on the entire project",
+        "default_permission": "A",
+        "default_apivisibility": "TVPRM",
+        "ApiKeyRoles": [
+          {
+            "apikey_ident": 1
+          }
+        ]
+      }
+    ]
+  }
+]
